@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="../Assets/Static/icon.png"/>
+    <title>AnnonLab</title>
+    <style>
+        * {
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .main {
+            width: 100vw;
+        }
+
+        .head {
+            text-align: center;
+        }
+
+        .userlink {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .userlink .Selection {
+            margin: 10px;
+        }
+
+        .userlink #Input_Section {
+            display: none;
+        }
+
+        .userlink #File_Section {
+            display: none;
+        }
+
+        .userlink .Section {
+            margin: 20px;
+        }
+
+        .userlink input {
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            background-color: skyblue;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        input[type=submit] {
+            background-color: blue;
+            color: #ccc;
+            cursor: pointer;
+        }
+
+        .display {
+            margin: 20px;
+            background-color: chocolate;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .display .row {
+            display: grid;
+            grid-template-columns: 3fr 8fr;
+            grid-column-gap: 5px;
+            grid-row-gap: 10px;
+
+            justify-content: center;
+            align-items: center;
+            padding-left: 5px;
+            margin: 10px;
+
+            background-color: #ccc;
+            border-radius: 5px;
+        }
+
+
+        button {
+            border: none;
+            outline: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: #ccc;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main">
+        <div class="head">
+            <h1>AnnonLab</h1>
+        </div>
+    
+        <div class="userlink">
+            <div class="Selection">
+                <span>Select your options: </span>
+                <br>
+                <button id="btn_input">Single Input for Profile Link</button>
+                <button id="btn_file">Multiple Input by File</button>
+            </div>
+            <div id="Input_Section" class="Section">
+                
+                <input type="text" id="userLink" name="userLink" placeholder="Enter linked in profile link">
+                <input id="submit_btn" onclick="showProfile()" type="submit">
+                
+            </div>
+            <div id="File_Section" class="Section">
+                <form id="form">
+                    <input type="file" name="file" id="file">
+                    <input id="upload_btn" type="submit">
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="display">
+            <div class="content">
+                <div class="row">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let btn = document.getElementById("submit_btn");
+
+        let inputSection = document.getElementById("Input_Section");
+        let fileSection = document.getElementById("File_Section");
+        let inputBtn = document.getElementById("btn_input");
+        let fileBtn = document.getElementById("btn_file");
+
+        inputBtn.onclick = () => {
+            console.log("input button selected");
+            fileSection.style.display = 'none';
+            inputSection.style.display = 'block';
+        }
+
+        fileBtn.onclick = () => {
+            console.log("file button selected");
+            inputSection.style.display = 'none';
+            fileSection.style.display = 'block';
+        }
+
+        let info = {};
+
+        function toFormData(obj){
+            var form_data = new FormData();
+            for( var key in obj ){
+                form_data.append(key, obj[key]);
+            }
+            return form_data;
+        }
+
+        async function showProfile(){
+            let profileLink = document.getElementById("userLink").value;
+            console.log(profileLink);
+            
+            let link = {userLink: profileLink};
+            console.log(link);
+            url = "http://127.0.0.1:3000/profile";
+            
+            params = {
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(link)
+            }
+
+            fetch(url, params)
+                .then(res => res.json())
+                .then((data) => {
+                    //info = data;
+                    show(data);
+                })
+                .catch(err => console.error(err))
+        }
+
+        function show(data){
+            //console.log(data.Name);
+            let text = "";
+            text += "<span>Name</span>";
+            text += "<span>"+data.Name+"</span>";
+            text += "<span>Designation</span>";
+            text += "<span>"+data.Designation+"</span>";
+            text += "<span>university</span>";
+            text += "<span>"+data.University+"</span>";
+            text += "<span>Location</span>";
+            text += "<span>"+data.Location+"</span>";
+            text += "<span>Skills</span>";
+            text += "<span>";
+            let idx = 1;
+            for( x of data.Skills){
+                text += idx+": "+ x +"  ";
+                idx = idx + 1;
+            }
+            text += "</span>";
+            text += "<span></span>";
+            
+            document.querySelector(".row").innerHTML = "";
+            document.querySelector(".row").innerHTML = text;
+
+        }
+
+        const myForm = document.getElementById("form");
+        const inFile = document.getElementById("file");
+        
+        myForm.addEventListener('submit', e => {
+            e.preventDefault();
+
+            let url = "http://127.0.0.1:3000/upload";
+            const formData = new FormData();
+            formData.append('file', inFile.files[0]);
+
+            params = {
+                method: 'post',
+                body: formData
+            }
+
+            fetch(url, params)
+                .then(res => res.json())
+                .then((data) => {
+                    //info = data;
+                    showAll(data);
+                    //console.log(data);
+                })
+                .catch(err => console.error(err))
+        })
+
+        
+        function showAll(Users){
+            //console.log(Users.Users);
+
+            let text = "";
+            for(idx in Users.Users){
+                let data = Users.Users[idx];
+                console.log(data);
+                text += "<div class='row'>";
+                text += "<span>Name</span>";
+                text += "<span>"+data.Name+"</span>";
+                text += "<span>Designation</span>";
+                text += "<span>"+data.Designation+"</span>";
+                text += "<span>university</span>";
+                text += "<span>"+data.University+"</span>";
+                text += "<span>Location</span>";
+                text += "<span>"+data.Location+"</span>";
+                text += "<span>Skills</span>";
+                text += "<span>";
+                let ix = 1;
+                for( x of data.Skills){
+                    text += ix+": "+ x +"  ";
+                    ix = ix + 1;
+                }
+                text += "</span>";
+                text += "<span></span></div>";
+            }
+
+            document.querySelector(".content").innerHTML = "";
+            document.querySelector(".content").innerHTML = text;
+
+        }
+
+        
+    </script>
+</body>
+</html>
