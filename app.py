@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+from pyChatGPT import ChatGPT
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, jsonify, url_for, send_from_directory, redirect
 import os
@@ -26,23 +27,23 @@ def Linked_Link(userLink):
     userEmail = contents[0]
     userPassword = contents[1]
 
-    #user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
-    #options = webdriver.ChromeOptions()
-    #options.headless = True
-    #options.add_argument(f'user-agent={user_agent}')
-    #options.add_argument("--window-size=1920,1080")
-    #options.add_argument('--ignore-certificate-errors')
-    #options.add_argument('--allow-running-insecure-content')
-    #options.add_argument("--disable-extensions")
-    #options.add_argument("--proxy-server='direct://'")
-    #options.add_argument("--proxy-bypass-list=*")
-    #options.add_argument("--start-maximized")
-    #options.add_argument('--disable-gpu')
-    #options.add_argument('--disable-dev-shm-usage')
-    #options.add_argument('--no-sandbox')
-    #driver = webdriver.Chrome(options=options)
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.headless = True
+    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--allow-running-insecure-content')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--proxy-server='direct://'")
+    options.add_argument("--proxy-bypass-list=*")
+    options.add_argument("--start-maximized")
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--no-sandbox')
+    driver = webdriver.Chrome('/usr/bin/chromedriver',options=options)
+    #driver = webdriver.Chrome()
     driver.get("https://www.linkedin.com/home")
 
     driver.find_element(By.XPATH,"//input[@id='session_key']").send_keys(userEmail)
@@ -50,7 +51,7 @@ def Linked_Link(userLink):
     driver.find_element(By.XPATH,"//button[normalize-space()='Sign in']").click()
     time.sleep(10)
 
-    userLink = "https://www.linkedin.com/in/atiqur-rahman-rasel-6814871a4/"
+    #userLink = "https://www.linkedin.com/in/atiqur-rahman-rasel-6814871a4/"
     driver.get(userLink)
     time.sleep(10)
     #print(driver.title)
@@ -83,16 +84,44 @@ def Linked_Link(userLink):
         "Skills" : all_skill
     }
 
-    #myFile = open('infirmation.csv','a+')
-    #myFile.write("Name: "+name+"\n")
-    #myFile.write("Designation: "+designation+"\n")
-    #myFile.write("Location: "+location+"\n")
-    #myFile.write("Skills: " + str(all_skill))
-    #myFile.write("\n\n")
+    info = str(obj)
+    api2 = ChatGPT(auth_type='openai', captcha_solver=None, email='aiubminiature@gmail.com', password='Miniature@1234')
+
+    response = api2.send_message('write a welcome message in this profile.'+info)
+
+    msg = response['message']
+    print("Message response done.")
+
+    #time.sleep(10)
+    #myFile = open('Message.csv','w')
+    #myFile.write(msg)
     #myFile.close()
+
+    print("Data saved successfully!")
+    api2.reset_conversation()
+    api2.clear_conversations() 
+    api2.refresh_chat_page()
+
+    result = {
+        "Name": name,
+        "Designation": designation,
+        "University": university,
+        "Location": location,
+        "Skills" : all_skill,
+        "Message" : msg
+    }
+
+    myFile = open('information.csv','w')
+    myFile.write("Name: "+name+"\n")
+    myFile.write("Designation: "+designation+"\n")
+    myFile.write("Location: "+location+"\n")
+    myFile.write("Skills: " + str(all_skill)+"\n")
+    myFile.write("Message: " + msg)
+    myFile.write("\n\n")
+    myFile.close()
     
     print("This task has been completed!")
-    return obj
+    return result
 
     #print(name)
     #print(designation)
@@ -136,23 +165,23 @@ def Linked_Multiple(Currentfile):
     userEmail = contents[0]
     userPassword = contents[1]
 
-    #user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36"
 
-    #options = webdriver.ChromeOptions()
-    #options.headless = True
-    #options.add_argument(f'user-agent={user_agent}')
-    #options.add_argument("--window-size=1920,1080")
-    #options.add_argument('--ignore-certificate-errors')
-    #options.add_argument('--allow-running-insecure-content')
-    #options.add_argument("--disable-extensions")
-    #options.add_argument("--proxy-server='direct://'")
-    #options.add_argument("--proxy-bypass-list=*")
-    #options.add_argument("--start-maximized")
-    #options.add_argument('--disable-gpu')
-    #options.add_argument('--disable-dev-shm-usage')
-    #options.add_argument('--no-sandbox')
-    #driver = webdriver.Chrome(options=options)
-    driver = webdriver.Chrome()
+    options = webdriver.ChromeOptions()
+    options.headless = True
+    options.add_argument(f'user-agent={user_agent}')
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument('--ignore-certificate-errors')
+    options.add_argument('--allow-running-insecure-content')
+    options.add_argument("--disable-extensions")
+    options.add_argument("--proxy-server='direct://'")
+    options.add_argument("--proxy-bypass-list=*")
+    options.add_argument("--start-maximized")
+    options.add_argument('--disable-gpu')
+    options.add_argument('--disable-dev-shm-usage')
+    options.add_argument('--no-sandbox')
+    driver = webdriver.Chrome('/usr/bin/chromedriver', options=options)
+    #driver = webdriver.Chrome()
     driver.get("https://www.linkedin.com/home")
 
     driver.find_element(By.XPATH,"//input[@id='session_key']").send_keys(userEmail)
@@ -196,15 +225,45 @@ def Linked_Multiple(Currentfile):
             "Skills" : all_skill
         }
 
-        all_user.append(obj)
+        info = str(obj)
+        api2 = ChatGPT(auth_type='openai', captcha_solver=None, email='aiubminiature@gmail.com', password='Miniature@1234')
 
-        #myFile = open(Currentfile,'a+')
-        #myFile.write("Name: "+name+"\n")
-        #myFile.write("Designation: "+designation+"\n")
-        #myFile.write("Location: "+location+"\n")
-        #myFile.write("Skills: " + str(all_skill))
-        #myFile.write("\n\n")
+        response = api2.send_message('write a welcome message in this profile.'+info)
+
+        msg = response['message']
+        print("Message response done.")
+
+        #time.sleep(10)
+        #myFile = open('Message.csv','a+')
+        #myFile.write(msg)
+        #myFile.write('\n\n')
         #myFile.close()
+
+        print("Data saved successfully!")
+        api2.reset_conversation()
+        api2.clear_conversations() 
+        api2.refresh_chat_page()
+        
+        result = {
+            "Name": name,
+            "Designation": designation,
+            "University": university,
+            "Location": location,
+            "Skills" : all_skill,
+            "Message" : msg
+        }
+
+        all_user.append(result)
+
+        myFile = open('information.csv','a+')
+        myFile.write("Name: "+name+"\n")
+        myFile.write("Designation: "+designation+"\n")
+        myFile.write("Location: "+location+"\n")
+        myFile.write("Skills: " + str(all_skill)+"\n")
+        myFile.write("Message: " + msg)
+        myFile.write("\n\n")
+        myFile.close()
+
         print("Single profile has been visited!")
     print("This task has been completed!")
     return all_user
