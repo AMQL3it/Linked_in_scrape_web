@@ -75,8 +75,7 @@
             align-items: center;
             padding-left: 5px;
             margin: 10px;
-
-            background-color: #ccc;
+            border: 2px solid black;
             border-radius: 5px;
         }
 
@@ -163,7 +162,7 @@
             console.log(profileLink);
             
             let link = {userLink: profileLink};
-            console.log(link);
+            //console.log(link);
             url = "http://127.0.0.1:3000/profile";
             
             params = {
@@ -184,7 +183,7 @@
         }
 
         function show(data){
-            //console.log(data.Name);
+            //console.log(data);
             let text = "";
             text += "<span>Name</span>";
             text += "<span>"+data.Name+"</span>";
@@ -202,7 +201,10 @@
                 idx = idx + 1;
             }
             text += "</span>";
+            text += "<span>Message</span>";
+            text += "<span>"+data.Message+"</span>";
             text += "<span></span>";
+            text += "<span><button>Download as PDF File</button></span>";
             
             document.querySelector(".row").innerHTML = "";
             document.querySelector(".row").innerHTML = text;
@@ -241,7 +243,7 @@
             let text = "";
             for(idx in Users.Users){
                 let data = Users.Users[idx];
-                console.log(data);
+                //console.log(data);
                 text += "<div class='row'>";
                 text += "<span>Name</span>";
                 text += "<span>"+data.Name+"</span>";
@@ -259,7 +261,13 @@
                     ix = ix + 1;
                 }
                 text += "</span>";
-                text += "<span></span></div>";
+                text += "<span>Message</span>";
+                text += "<span>"+data.Message+"</span>";
+                text += "<span></span>";
+                text += "<span><button>Download as PDF File</button></span></div>";
+
+                //document.querySelector(".content").innerHTML = "";
+                //document.querySelector(".content").innerHTML = text;
             }
 
             document.querySelector(".content").innerHTML = "";
